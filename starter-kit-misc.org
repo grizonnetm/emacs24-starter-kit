@@ -169,4 +169,137 @@ let them live in the =backups/= directory inside of the starter kit.
      (set-face-foreground 'diff-added "green4")
      (set-face-foreground 'diff-removed "red3")))
 #+end_src
+** Personal configuration
+#+begin_src emacs-lisp
+
+;; ===========================================================================
+;; Chargement et activation des modes que j'utilise couramment
+;; ===========================================================================
+
+;; Mode activant l'affichage des numéros de ligne dans la marge gauche de la
+;; fenêtre
+(require 'linum)
+
+;; Activer la mise en exergue des espaces superflus ou hétérogènes
+(require 'whitespace)
+
+;; Appariement visuel des parenthèses, crochets et accolades
+(require 'paren)
+(show-paren-mode 1)
+
+
+
+(set-cursor-color "#ff0000")
+(set-face-background 'default "#000000")
+(set-face-foreground 'default "#dbdbdb")
+
+;;;;;;;;;;;;;;;;;;;;;
+;;; Delete a whole line
+(global-set-key (kbd "M-l") 'kill-whole-line)
+(setq kill-whole-line t)
+
+;;;;;;;;;;;; IDO
+(require 'ido)
+(setq ido-enable-flex-matching t)
+(setq ido-everywhere t)
+(setq ido-max-directory-size 100000)
+(setq ido-file-extensions-order '(".org" ".scm" ".py" ".emacs" ".h" ".txx" ".cxx"))
+(ido-mode (quote both))
+;;;;;;;;;;;
+
+;;;autofill mode
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
+
+
+;;open with maximum size by default
+(defun toggle-fullscreen ()
+  (interactive)
+  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+	    		 '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
+  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+	    		 '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
+  )
+(toggle-fullscreen)
+
+(cua-mode t)
+    (setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
+    (transient-mark-mode 1) ;; No region when it is not highlighted
+    (setq cua-keep-region-after-copy t) ;; Standard Windows behaviour
+
+
+;;;Development;;;
+
+;;OTB;;
+;; c++ modes for some files: txx, h
+(add-to-list 'auto-mode-alist '("\\.txx\\'" . c++-mode))
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+
+;; cuda files in c mode
+(add-to-list 'auto-mode-alist '("\\.cu\\'" . c-mode))
+
+;; Comments 80 col wide
+(setq-default fill-column 80)
+
+;; OTB style
+(c-add-style "otb"
+       '("stroustrup"
+         (c-basic-offset . 2)
+         (c-offsets-alist
+           (c . c-lineup-dont-change)
+           (innamespace . 0)
+           (inline-open . 0)
+           (substatement-open . +)
+           (statement-block-intro . 0)
+           (arglist-intro . +)
+           (arglist-close . 0) ) ) )
+
+(defun maybe-otb-style ()
+  (when (and buffer-file-name
+             (not (string-match "ossim" buffer-file-name)))
+    (c-set-style "otb")))
+
+(add-hook 'c++-mode-hook 'maybe-otb-style)
+
+(add-hook 'c++-mode-hook
+
+(lambda ()
+            (setq tab-width 2) (turn-on-auto-fill)))
+
+(defun apply-otb-style ()
+   (c-set-style "otb")
+   (indent-region (point-min) (point-max) nil)
+   (save-buffer))
+
+;;default compilation command
+(setq compile-command "cd ~/projets/OTB/bin/release/OTB; make -j 6")
+
+;; Always insert spaces, never tabs.
+(setq-default indent-tabs-mode nil)
+
+;; ;; Remove trailing whitespace when saving
+;; (add-hook 'c++-mode-hook
+;;            (lambda ()
+;;              (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
+
+;; cmake config
+(autoload 'cmake-mode "cmake-mode" t)
+(add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-mode))
+(add-to-list 'auto-mode-alist '("\\.cmake\\'" . cmake-mode))
+
+;;;Development;;;
+
+;; dedicated lisp functions
+;; source: xemacs 20.3
+(defun count-words-region (start end)
+  (interactive "r")
+  (save-excursion
+    (let ((n 0))
+      (goto-char start)
+      (while (< (point) end)
+        (if (forward-word 1)
+            (setq n (1+ n))))
+      (message "Region has %d words" n)
+      n)))
+
+#+end_src
 
