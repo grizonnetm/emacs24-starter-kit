@@ -212,14 +212,14 @@ let them live in the =backups/= directory inside of the starter kit.
 
 
 ;;open with maximum size by default
-(defun toggle-fullscreen ()
-  (interactive)
-  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-	    		 '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
-  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-	    		 '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
-  )
-(toggle-fullscreen)
+;;(defun toggle-fullscreen ()
+;;  (interactive)
+;; (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+;;	    		 '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
+;;  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+;;	    		 '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
+;; )
+;;(toggle-fullscreen)
 
 (cua-mode t)
     (setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
